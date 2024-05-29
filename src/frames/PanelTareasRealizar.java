@@ -31,7 +31,7 @@ public class PanelTareasRealizar extends javax.swing.JPanel {
 
     private void configurarTabla() {
         modeloTabla.setColumnIdentifiers(new String[]{"ID", "Descripción", "Fecha Límite", "Prioridad", "Acción"});
-        tblTareasRealizar.setDefaultRenderer(Object.class, new RendenTabla());
+        tblTareasRealizar.setDefaultRenderer(Object.class, new RenderTabla());
         if (tblTareasRealizar.getColumnCount() >= 5) {
             TableColumn columnaAccion = tblTareasRealizar.getColumnModel().getColumn(4);
             columnaAccion.setCellRenderer(new TableCellRenderer() {

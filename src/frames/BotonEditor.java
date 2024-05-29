@@ -13,26 +13,25 @@ public class BotonEditor extends AbstractCellEditor implements TableCellEditor, 
     private JButton button;
 
     public BotonEditor() {
-        button = new JButton();
+        button = new JButton("Modificar");
         button.addActionListener(this);
+        button.setFocusPainted(false); // Evitar que el botón muestre el borde de foco
     }
 
     @Override
     public Object getCellEditorValue() {
-        return button;
+        return button.getText(); // Devolver el texto del botón en lugar del botón mismo
     }
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        button.setText("Modificar");
         return button;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        fireEditingStopped(); // Detener la edición cuando se presiona el botón
         ModificarTarea ventanaModificar = new ModificarTarea();
         ventanaModificar.setVisible(true);
-        fireEditingStopped();
     }
 }
-

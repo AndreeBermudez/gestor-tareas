@@ -12,6 +12,7 @@ public class ModificarTarea extends javax.swing.JFrame {
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         this.setResizable(true);
+        setDefaultCloseOperation(ModificarTarea.DISPOSE_ON_CLOSE);
     }
 
     @SuppressWarnings("unchecked")

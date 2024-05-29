@@ -10,6 +10,10 @@ import javax.swing.table.TableColumn;
 import logica.ITarea;
 import logica.Tarea;
 import frames.BotonEditor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  *
@@ -23,7 +27,13 @@ public class PanelTareasPendientes extends javax.swing.JPanel {
 
     public PanelTareasPendientes(ITarea tareaService) {
         this.tareaService = tareaService;
-        this.modeloTabla = new DefaultTableModel();
+        this.modeloTabla = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Retorna false para hacer que ninguna celda sea editable
+                return false;
+            }
+        };
         initComponents();
         configurarTabla();
         actualizarTabla();
@@ -32,7 +42,7 @@ public class PanelTareasPendientes extends javax.swing.JPanel {
 
     private void configurarTabla() {
         modeloTabla.setColumnIdentifiers(new String[]{"ID", "Descripción", "Fecha Límite", "Prioridad", "Acción"});
-        tblTareasPendientes.setDefaultRenderer(Object.class, new RendenTabla());
+        tblTareasPendientes.setDefaultRenderer(Object.class, new RenderTabla());
 
         if (tblTareasPendientes.getColumnCount() >= 5) {
             TableColumn columnaAccion = tblTareasPendientes.getColumnModel().getColumn(4);
@@ -50,6 +60,24 @@ public class PanelTareasPendientes extends javax.swing.JPanel {
             tblTareasPendientes.getColumnModel().getColumn(3).setPreferredWidth(30);
             tblTareasPendientes.getColumnModel().getColumn(4).setPreferredWidth(60);
         }
+
+        tblTareasPendientes.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int column = tblTareasPendientes.getColumnModel().getColumnIndexAtX(e.getX());
+                int row = e.getY() / tblTareasPendientes.getRowHeight();
+
+                if (row >= 0 && row < tblTareasPendientes.getRowCount() && column >= 0 && column < tblTareasPendientes.getColumnCount()) {
+                    Object value = tblTareasPendientes.getValueAt(row, column);
+                    if (value instanceof JButton) {
+                        JButton button = (JButton) value;
+                        // Simular un clic del botón
+                        button.doClick();
+                    }
+                }
+            }
+        });
+
     }
 
     public void agregarTarea(Tarea tarea) {
@@ -57,15 +85,23 @@ public class PanelTareasPendientes extends javax.swing.JPanel {
         actualizarTabla();
     }
 
-    public void actualizarTabla() {
-        List<Tarea> tareas = tareaService.obtenerTareas();
-        modeloTabla.setRowCount(0);
-        for (Tarea t : tareas) {
-            JButton btnModificar = new JButton("Modificar");
-            modeloTabla.addRow(new Object[]{t.getID(), t.getDescripcion(), t.getFecha(), t.getPrioridad(), btnModificar});
-        }
-        tblTareasPendientes.setModel(modeloTabla);
+public void actualizarTabla() {
+    List<Tarea> tareas = tareaService.obtenerTareas();
+    modeloTabla.setRowCount(0);
+    for (Tarea t : tareas) {
+        JButton btnModificar = new JButton("Modificar");
+        btnModificar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ModificarTarea ventanaModificar = new ModificarTarea();
+                ventanaModificar.setVisible(true);
+            }
+        });
+        modeloTabla.addRow(new Object[]{t.getID(), t.getDescripcion(), t.getFecha(), t.getPrioridad(), btnModificar});
     }
+    tblTareasPendientes.setModel(modeloTabla);
+}
+
 
     private int generarNuevoID() {
         return nextID++;
